@@ -25,7 +25,7 @@ ui <- fluidPage(
                   label = "Hour:",
                   min = 0,
                   max = 23,
-                  value = 12,step=1
+                  value = 12
       ),
       
       # Das Baujahr als numerische Eingabe
@@ -35,8 +35,7 @@ ui <- fluidPage(
                   label="Temperature:", 
                   value = 0,
                   min=-17.80,
-                  max=39.40,
-                  step=1
+                  max=39.40, step=0.1
       ),
       
       # Die Lage als Auswahlliste
@@ -98,10 +97,9 @@ server <- function(input, output) {
     # werden jeweils in 0/1-Variablen umgewandelt (mit ifelse) und in
     # den Datentyp factor umgewandelt (mit as.factor);
     # die Werte werden in die erste Zeile von X eingetragen
-    X[1,"Holiday"] <- as.factor(ifelse(input$Holiday == FALSE, 0, 1))
-    X[1,"Functioning.Day"] <- as.factor(ifelse(input$Functioning.Day == FALSE, 0, 1))
-    X[1,"zh"] <- as.factor(ifelse(input$zentralheizung == FALSE, 0, 1))
-    
+    X[1,"Holiday"] <- as.factor(ifelse(input$Holiday == FALSE, "No Holiday", "Holiday"))
+    X[1,"Functioning.Day"] <- as.factor(ifelse(input$Functioning.Day == FALSE, "No", "Yes"))
+
     # Berechne die Prognosen für X
     # die Prognose der neuen, eingegebenen Werte stehen im ersten Eintrag des Prognosevektors
     prognosevektor <- predict(model,X)
@@ -124,7 +122,7 @@ server <- function(input, output) {
     # Speichere die Daten der Einflussvariablen in ein Objekt X
     # und die Daten der Zielvariable in y.
     # Berechne dann die Abweichungen zwischen den Prognosen und den realen Werten
-    X[1,"zh"] <- as.factor(ifelse(input$zentralheizung == FALSE, 0, 1))
+    X <- Daten[,c("Hour","Temparatur..C.","Seasons","Holiday","Functioning.Day")]
     y <- Daten[,"Rented.Bike.Count"]
     abweichungen <- y-predict(model,X)
     
