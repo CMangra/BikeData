@@ -8,7 +8,7 @@ Daten <- subset(Daten,Functioning.Day == "Yes")
 
 summary(Daten)
 
-model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Seasons + Holiday, data=Daten)
+model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Seasons + Holiday + Snowfall..cm. + Rainfall.mm. + Solar.Radiation..MJ.m2. + Visibility..10m. + Humidity..., data=Daten)
 
 model
 
