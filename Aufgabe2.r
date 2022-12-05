@@ -8,7 +8,11 @@ Daten[,"Functioning.Day"] <- as.factor(Daten[,"Functioning.Day"])
 
 summary(Daten)
 
-model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Humidity... + Visibility..10m. + Solar.Radiation..MJ.m2. + Rainfall.mm. + Snowfall..cm. + Seasons + Holiday + Functioning.Day, data=Daten)
+Daten <- subset(Daten,Functioning.Day == "Yes")
+
+summary(Daten)
+
+model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Humidity... + Visibility..10m. + Solar.Radiation..MJ.m2. + Rainfall.mm. + Snowfall..cm. + Seasons + Holiday, data=Daten)
 model
 
 y <- Daten[,"Rented.Bike.Count"] 

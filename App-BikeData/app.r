@@ -6,7 +6,7 @@
 ui <- fluidPage(
   
   # Titel der App
-  titlePanel("Münchner Mietspiegel"),
+  titlePanel("Seoul Bike Data"),
   
   # Layout für die Eingaben in die App und die Ausgaben
   sidebarLayout(
@@ -18,9 +18,7 @@ ui <- fluidPage(
       h3("Wohnung:",align="left"),
       hr(style="height: 1px; background: black"),
       
-      # Ein Slider für die Fläche der Wohnung
-      # der Slider geht hier von 30 (min) bis 100 (max), 
-      # die Voreinstellung ist 75 (value)
+      # Ein Slider für die Zeit
       sliderInput(inputId = "Hour",
                   label = "Hour:",
                   min = 0,
@@ -28,10 +26,8 @@ ui <- fluidPage(
                   value = 12
       ),
       
-      # Das Baujahr als numerische Eingabe
-      # die Werte gehen von 1950 (min) bis 2000 (max) in Einerschritten (step)
-      # die Voreinstellung ist 1981 (value)
-      sliderInput(inputId="Temperature..C.", 
+      # Ein Slider für die Temperatur
+      sliderInput(inputId="Temperature", 
                   label="Temperature:", 
                   value = 0,
                   min=-17.80,
@@ -43,8 +39,8 @@ ui <- fluidPage(
       # die entsprechende Zuordnung mit Zahlen 1, 2 und 3 sind wie im Datensatz,
       # die Voreinstellung ist 1 (selected) - also eine "normale Lage" 
       selectInput("Seasons",label="Seasons:", 
-                  choices = list("Autumn" = 1, "Spring" = 2,
-                                 "Summer" = 3, "Winter" = 4), selected = 1
+                  choices = list("Autumn", "Spring",
+                                 "Summer", "Winter"), selected = "Autumn"
       ), 
       
       # eine Überschrift für die weiteren Ausstattungsmerkmale
@@ -55,7 +51,6 @@ ui <- fluidPage(
       # die Voreinstellung ist jeweils FALSE (value), das heißt, es ist als
       # Voreinstellung keine Box angeklickt
       checkboxInput(inputId="Holiday", label="Holiday", value = FALSE),
-      checkboxInput(inputId="Functioning.Day", label="Functioning.Day", value = FALSE),
     ),
     
     # der Hauptbereich der Nutzeroberfläche für die Ausgabe der Ergebnisse
@@ -83,22 +78,23 @@ server <- function(input, output) {
   prognose <- reactive({
     
     # Speichere die Daten der Einflussvariablen in ein Objekt X
-    X <- Daten[,c("Hour","Temparatur..C.","Seasons","Holiday","Functioning.Day")]
+    X <- Daten[,c("Hour","Temperature..C.","Seasons","Holiday")]
     
     # Ersetze die erste Zeile in X nun mit den neuen, eingegebenen Werten
     
     # zunächst die Werte für flaeche und bjahr 
     X[1,"Hour"] <- input$Hour 
-    X[1,"Temperature..C."] <- input$Temperature..C.
+    X[1,"Temperature..C."] <- input$Temperature
     # der angegebene Wert für lage muss zusätzlich noch in factor umgewandelt werden
+    
     X[1,"Seasons"] <- as.factor(input$Seasons)
+    
     
     # die Eingaben TRUE/FALSE für die Ausstattungsmerkmale kueche, bad und zh
     # werden jeweils in 0/1-Variablen umgewandelt (mit ifelse) und in
     # den Datentyp factor umgewandelt (mit as.factor);
     # die Werte werden in die erste Zeile von X eingetragen
     X[1,"Holiday"] <- as.factor(ifelse(input$Holiday == FALSE, "No Holiday", "Holiday"))
-    X[1,"Functioning.Day"] <- as.factor(ifelse(input$Functioning.Day == FALSE, "No", "Yes"))
 
     # Berechne die Prognosen für X
     # die Prognose der neuen, eingegebenen Werte stehen im ersten Eintrag des Prognosevektors
@@ -122,13 +118,13 @@ server <- function(input, output) {
     # Speichere die Daten der Einflussvariablen in ein Objekt X
     # und die Daten der Zielvariable in y.
     # Berechne dann die Abweichungen zwischen den Prognosen und den realen Werten
-    X <- Daten[,c("Hour","Temparatur..C.","Seasons","Holiday","Functioning.Day")]
+    X <- Daten[,c("Hour","Temperature..C.","Seasons","Holiday")]
     y <- Daten[,"Rented.Bike.Count"]
     abweichungen <- y-predict(model,X)
     
     # Zeichne jetzt im Histogram die Prognose mit den Abweichungen;
     # dies visualisiert die bandbreite der Mieten für diese Wohnung 
-    hist(prog+abweichungen, col = "blue", main = "Verteilung der Quadratmetermieten",xlim=c(0.0,3600.0))
+    hist(prog+abweichungen, col = "blue", main = "Verteilung der Quadratmetermieten",xlim=c(0,15), breaks = 2)
     
   })
   
