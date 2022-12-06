@@ -1,0 +1,2 @@
+- Nur Daten wo functioning day yes ist. Minimum ist dann nihct mehr null sondern 2
+- Koeffizienten müssen in der Präsentation
