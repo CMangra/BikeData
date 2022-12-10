@@ -1,55 +1,69 @@
 
 ui <- fluidPage(
   
+  setBackgroundImage(src = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiF9h1DWI7ANnK6ve9gUKkbFjR4ybAi-oTqNHtKUWfewPIH1i-cbS83gdcav5tWiXbxgzUJYJGJRmxzWM2gq1_AXVKBOBsAHooSN5CxpYAGm5y1BUNO7JrK3Eny9J4WxaENamZcdwH2dbJzlg79eInX6LtnR3J6vScKJaBnVMLp8q5ZvLJXt197W79Zuw/s16000/wp1867536.jpg"),
   titlePanel("Seoul Bike Data"),
   
+  
   sidebarLayout(
-    
+
     sidebarPanel(
-      
-      h3("Wohnung:",align="left"),
-      hr(style="height: 1px; background: black"),
-      
+      style = "background-color: #d0dde9;",      
       sliderInput(inputId="Temperature", 
                   label="Temperature:", 
                   value = 0,
                   min=-20,
-                  max=40, step=0.1
+                  max=40, step=0.1, animate = animationOptions(interval = 400)
       ),
+      
+      #pickerInput(inputId = "Temperature", label = "Temperature",
+      #            min = -20, max = 40, value = 0,
+      #            picker = "slider",
+      #            pickerOptions = list(
+      #              skin = "red",
+      #              handle = "round"
+      #            )),
       
       sliderInput(inputId="Humidity...", 
                   label="Humidity:", 
                   value = 50,
                   min=-0,
-                  max=100, step=1
+                  max=100, step=1, animate = animationOptions(interval = 400)
       ),
       
       sliderInput(inputId="Visibility..10m.", 
                   label="Visibility (10m):", 
                   value = 50,
                   min=0,
-                  max=2000, step=1
+                  max=2000, step=1, animate = animationOptions(interval = 400)
       ),
       
       sliderInput(inputId="Solar.Radiation..MJ.m2.", 
                   label="Solar.Radiation (MJ/m^2):", 
                   value = 0,
                   min=0,
-                  max=4, step=0.01
+                  max=4, step=0.01, animate = animationOptions(interval = 400)
       ),
       
       sliderInput(inputId="Rainfall.mm.", 
                   label="Rainfall(mm):", 
                   value = 0,
                   min=0,
-                  max=100, step=1
+                  max=100, step=1, animate = animationOptions(interval = 400)
+      ),
+      
+      sliderInput(inputId="Wind.speed..m.s.", 
+                  label="Wind speed (m/s):", 
+                  value = 0,
+                  min=0,
+                  max=8, step=0.1, animate = animationOptions(interval = 400)
       ),
       
       sliderInput(inputId="Snowfall..cm.", 
                   label="Snowfall (cm):", 
                   value = 0,
                   min=0,
-                  max=10, step=0.1
+                  max=10, step=0.1, animate = animationOptions(interval = 400)
       ),
       
       selectInput("Seasons",label="Seasons:", 
@@ -64,7 +78,10 @@ ui <- fluidPage(
     
     mainPanel(
       
-      plotOutput(outputId = "Verteilung"),
+      div(
+        align = "center",
+        plotOutput(outputId = "BarChart")
+      ),
       
       textOutput("Prognose"),
       
@@ -78,12 +95,12 @@ server <- function(input, output) {
   
   
   
-  output$Verteilung <- renderPlot({
+  output$BarChart <- renderPlot({
     for (hour in 0:23){
       
       prognose <- reactive({
         
-        X <- Daten[,c("Hour","Temperature..C.","Seasons","Holiday","Snowfall..cm.","Rainfall.mm.","Solar.Radiation..MJ.m2.","Visibility..10m.","Humidity...")]
+        X <- Daten[,c("Hour","Temperature..C.","Seasons","Holiday","Snowfall..cm.","Rainfall.mm.","Solar.Radiation..MJ.m2.","Visibility..10m.","Humidity...", "Wind.speed..m.s.")]
         
         X[1,"Hour"] <- hour
         X[1,"Temperature..C."] <- input$Temperature 
@@ -94,6 +111,7 @@ server <- function(input, output) {
         X[1,"Humidity..."] <- input$Humidity...
         X[1,"Holiday"] <- as.factor(ifelse(input$Holiday == FALSE, "No Holiday", "Holiday"))
         X[1,"Solar.Radiation..MJ.m2."] <- input$Solar.Radiation..MJ.m2.
+        X[1,"Wind.speed..m.s."] <- input$Wind.speed..m.s.
         
         prognosevektor <- predict(model,X)
         prog <- prognosevektor[1]
@@ -107,11 +125,10 @@ server <- function(input, output) {
       prognose_list <- append(prognose_list, prog)
     }
     
-    print(unlist(prognose_list))
-    
     values <- c(unlist(prognose_list))
     labels <- c(0:23)
-    bar_chart <- barplot(values, names.arg=labels, xpd=TRUE, las=2, xlab="Hour", font.lab=2, col.lab="#69b3a2", col="#69b3a2", ylim=c(0,2700))
+    par(bg = "#d0dde9")
+    bar_chart <- barplot(values, names.arg=labels, xpd=TRUE, las=2, main = "Forecast of rented bikes per hour", xlab="Hour", ylab="Renten Bike Count", font.lab=2, col.lab="#5787af", col="#5787af", ylim=c(0,2700), border = "white")
     
     for (i in 1:length(values)) {
       text(bar_chart[i], values[i], labels = round(values[i], digits=0), las=2, pos = 3, cex = 0.8)

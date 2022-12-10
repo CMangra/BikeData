@@ -14,10 +14,10 @@ for (day in seq(1,8760, 24)){
   highest_visibility <- -1000
   highest_humidity <- -1000
   highest_solar_radiation <- -1000
-  #print(day)
+  highest_wind_speed <- -1000
+
   for (hour in 0:23){
-    #print(day+hour)
-    #print(Daten[day+hour, "Temperature..C."])
+
     if (Daten[day+hour, "Temperature..C."] > highest_temperature){
       highest_temperature <- Daten[day+hour, "Temperature..C."]
     }
@@ -46,7 +46,10 @@ for (day in seq(1,8760, 24)){
     if (Daten[day+hour, "Solar.Radiation..MJ.m2."] > highest_solar_radiation){
       highest_solar_radiation <- Daten[day+hour, "Solar.Radiation..MJ.m2."]
     }
-    
+
+    if (Daten[day+hour, "Wind.speed..m.s."] > highest_wind_speed){
+      highest_wind_speed <- Daten[day+hour, "Wind.speed..m.s."]
+    }
   }   
   
   for (hour in 0:23){
@@ -56,6 +59,8 @@ for (day in seq(1,8760, 24)){
     Daten[day+hour, "Visibility..10m."] <- highest_visibility 
     Daten[day+hour, "Humidity..."] <- highest_humidity 
     Daten[day+hour, "Solar.Radiation..MJ.m2."] <- highest_solar_radiation 
+    Daten[day+hour, "Wind.speed..m.s."] <- highest_wind_speed 
+    
   }
   
 }
@@ -63,7 +68,7 @@ for (day in seq(1,8760, 24)){
 Daten <- subset(Daten,Functioning.Day == "Yes")
 
 
-model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Seasons + Holiday + Snowfall..cm. + Rainfall.mm. + Solar.Radiation..MJ.m2. + Visibility..10m. + Humidity..., data=Daten)
+model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Seasons + Holiday + Snowfall..cm. + Rainfall.mm. + Solar.Radiation..MJ.m2. + Visibility..10m. + Humidity... + Wind.speed..m.s., data=Daten)
 
 print(model)
 

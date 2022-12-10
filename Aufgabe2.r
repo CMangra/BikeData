@@ -5,17 +5,15 @@ Daten[, "Hour"] <- as.factor(Daten[, "Hour"])
 Daten[,"Seasons"] <- as.factor(Daten[,"Seasons"])
 Daten[,"Holiday"] <- as.factor(Daten[,"Holiday"])
 Daten[,"Functioning.Day"] <- as.factor(Daten[,"Functioning.Day"])
-
 summary(Daten)
 
 Daten <- subset(Daten,Functioning.Day == "Yes")
 
-Daten <- subset(Daten,Solar.Radiation..MJ.m2. > 0)
 
 
 print(summary(Daten))
 
-model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Humidity... + Visibility..10m. + Solar.Radiation..MJ.m2. + Rainfall.mm. + Snowfall..cm. + Seasons + Holiday, data=Daten)
+model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Humidity... + Visibility..10m. + Solar.Radiation..MJ.m2. + Rainfall.mm. + Snowfall..cm. + Seasons + Holiday + Wind.speed..m.s., data=Daten)
 model
 
 y <- Daten[,"Rented.Bike.Count"] 
