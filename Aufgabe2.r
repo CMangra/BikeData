@@ -10,7 +10,10 @@ summary(Daten)
 
 Daten <- subset(Daten,Functioning.Day == "Yes")
 
-summary(Daten)
+Daten <- subset(Daten,Solar.Radiation..MJ.m2. > 0)
+
+
+print(summary(Daten))
 
 model <- lm( Rented.Bike.Count ~ Hour + Temperature..C. + Humidity... + Visibility..10m. + Solar.Radiation..MJ.m2. + Rainfall.mm. + Snowfall..cm. + Seasons + Holiday, data=Daten)
 model
@@ -24,6 +27,4 @@ a <- model$coefficients
 a
 
 BikeCount <- a["Hour18"] + a["(Intercept)"] + a["Temperature..C."]*16.8 + a["Humidity..."]*60 + a["Visibility..10m."]*580 + a["Solar.Radiation..MJ.m2."]*0.46 + a["Rainfall.mm."]*0 +a["HolidayNo Holiday"] + a["SeasonsSpring"] + a["Functioning.DayYes"] # Prognose für Zeile 2804
-
-BikeCount
 
