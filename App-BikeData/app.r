@@ -83,6 +83,7 @@ ui <- fluidPage(
         plotOutput(outputId = "BarChart")
       ),
       
+      plotOutput(outputId = "BoxPlot"),
       textOutput("Prognose"),
       
     )
@@ -129,10 +130,18 @@ server <- function(input, output) {
     labels <- c(0:23)
     par(bg = "#d0dde9")
     bar_chart <- barplot(values, names.arg=labels, xpd=TRUE, las=2, main = "Forecast of rented bikes per hour", xlab="Hour", ylab="Renten Bike Count", font.lab=2, col.lab="#5787af", col="#5787af", ylim=c(0,2700), border = "white")
-    
     for (i in 1:length(values)) {
       text(bar_chart[i], values[i], labels = round(values[i], digits=0), las=2, pos = 3, cex = 0.8)
     }
+    
+  })
+  
+  output$BoxPlot <- renderPlot({
+    values <- unlist(Daten[,"Rented.Bike.Count"])
+    
+    par(bg = "#d0dde9")
+    
+    boxplot(main = "Rented Bike Count over the whole year (01.12.2017 - 30.11.2017) in Seoul", values, horizontal = TRUE, col="#5787af", xlab="Renten Bike Count", font.lab=2, col.lab="#5787af")
   })
 }
 
