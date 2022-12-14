@@ -132,7 +132,7 @@ server <- function(input, output) {
     
     par(bg = "#d0dde9")
     
-    boxplot(main = "Rented Bike Count over the whole year (01.12.2017 - 30.11.2018) in Seoul", values, horizontal = TRUE, col="#5787af", xlab="Rented Bike Count", font.lab=2, col.lab="#5787af")
+    boxplot(main = "Rented Bike Count over the whole year (01.12.2017 - 30.11.2018) in Seoul per hour", values, horizontal = TRUE, col="#5787af", xlab=expression(bold("Rented Bike Count")), col.lab="#5787af", font.lab=3)
   })
 }
 
